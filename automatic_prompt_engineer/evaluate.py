@@ -3,7 +3,6 @@ from abc import ABC, abstractmethod
 from automatic_prompt_engineer import llm
 
 
-
 def get_eval_method(eval_method):
     """
     Returns the evaluation method object.
@@ -14,17 +13,27 @@ def get_eval_method(eval_method):
     """
     if callable(eval_method):
         return eval_method
-    if eval_method == 'likelihood':
+    if eval_method == "likelihood":
         from automatic_prompt_engineer.evaluation import likelihood
+
         return likelihood.likelihood_evaluator
-    elif eval_method == 'bandits':
+    elif eval_method == "bandits":
         from automatic_prompt_engineer.evaluation import bandits
+
         return bandits.bandits_evaluator
     else:
-        raise ValueError('Invalid evaluation method.')
+        raise ValueError("Invalid evaluation method.")
 
 
-def evalute_prompts(prompts, eval_template, eval_data, demos_template, few_shot_data, eval_method, config):
+def evalute_prompts(
+    prompts,
+    eval_template,
+    eval_data,
+    demos_template,
+    few_shot_data,
+    eval_method,
+    config,
+):
     """
     Returns the scores for a list of prompts.
     Parameters:
@@ -37,7 +46,9 @@ def evalute_prompts(prompts, eval_template, eval_data, demos_template, few_shot_
         An evaluation result object.
     """
     eval_method = get_eval_method(eval_method)
-    return eval_method(prompts, eval_template, eval_data, demos_template, few_shot_data, config)
+    return eval_method(
+        prompts, eval_template, eval_data, demos_template, few_shot_data, config
+    )
 
 
 def demo_function(eval_template, config):
@@ -49,7 +60,7 @@ def demo_function(eval_template, config):
     Returns:
         A function that takes a prompt and returns a demo.
     """
-    model = llm.model_from_config(config['model'])
+    model = llm.model_from_config(config["model"])
 
     def fn(prompt, inputs):
         if not isinstance(inputs, list):
@@ -58,9 +69,8 @@ def demo_function(eval_template, config):
         for input_ in inputs:
             query = eval_template.fill(prompt=prompt, input=input_)
             queries.append(query)
-        outputs = model.generate_text(
-            queries, n=1)
-        return [out.strip().split('\n')[0] for out in outputs]
+        outputs = model.generate_text(queries, n=1)
+        return [out.strip().split("\n")[0] for out in outputs]
 
     return fn
 
@@ -68,12 +78,12 @@ def demo_function(eval_template, config):
 class EvaluationResult(ABC):
 
     @abstractmethod
-    def sorted(self, method='default'):
+    def sorted(self, method="default"):
         """Get the results in the form of a sorted prompt and score list.
         Has a method argument to support sorting by various metrics."""
         pass
 
     @abstractmethod
-    def in_place(self, method='default'):
+    def in_place(self, method="default"):
         """Get the results in the form of a list of prompts and scores without sorting."""
         pass

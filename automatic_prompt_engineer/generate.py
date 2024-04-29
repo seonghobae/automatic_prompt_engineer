@@ -1,4 +1,5 @@
 from faulthandler import disable
+
 from automatic_prompt_engineer import data, llm
 
 
@@ -29,14 +30,12 @@ def generate_prompts(prompt_gen_template, demos_template, prompt_gen_data, confi
         A list of prompts.
     """
     queries = []
-    for _ in range(config['num_subsamples']):
-        subsampled_data = data.subsample_data(
-            prompt_gen_data, config['num_demos'])
-        queries.append(get_query(prompt_gen_template,
-                                 demos_template, subsampled_data))
+    for _ in range(config["num_subsamples"]):
+        subsampled_data = data.subsample_data(prompt_gen_data, config["num_demos"])
+        queries.append(get_query(prompt_gen_template, demos_template, subsampled_data))
 
     # Instantiate the LLM
-    model = llm.model_from_config(config['model'], disable_tqdm=False)
-    prompts = model.generate_text(
-        queries, n=config['num_prompts_per_subsample'])
+    model = llm.model_from_config(config["model"], disable_tqdm=False)
+    prompts = model.generate_text(queries, n=config["num_prompts_per_subsample"])
     return prompts
+

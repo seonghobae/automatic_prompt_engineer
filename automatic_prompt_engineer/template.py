@@ -12,14 +12,17 @@ class GenerationTemplate:
         self.template = template
         # Check that the template is valid
         # There should be exactly one [APE] token
-        assert self.template.count('[APE]') == 1
+        assert self.template.count("[APE]") == 1
 
-    def fill(self, full_demo='', input='', output=''):
+    def fill(self, full_demo="", input="", output=""):
         """
         Fills in the template with the given values.
         """
-        return self.template.replace('[full_DEMO]', full_demo).replace(
-            '[INPUT]', input).replace('[OUTPUT]', output)
+        return (
+            self.template.replace("[full_DEMO]", full_demo)
+            .replace("[INPUT]", input)
+            .replace("[OUTPUT]", output)
+        )
 
 
 class EvalTemplate:
@@ -35,18 +38,22 @@ class EvalTemplate:
     def __init__(self, template):
         self.template = template
 
-    def fill(self, prompt='', full_demo='', input='', output=''):
+    def fill(self, prompt="", full_demo="", input="", output=""):
         """
         Fills in the template with the given values.
         """
-        return self.template.replace('[PROMPT]', prompt).replace(
-            '[full_DEMO]', full_demo).replace('[INPUT]', input).replace('[OUTPUT]', output)
+        return (
+            self.template.replace("[PROMPT]", prompt)
+            .replace("[full_DEMO]", full_demo)
+            .replace("[INPUT]", input)
+            .replace("[OUTPUT]", output)
+        )
 
     def convert_to_generation_template(self):
         """
         Converts the evaluation template to a generation template.
         """
-        return GenerationTemplate(self.template.replace('[PROMPT]', '[APE]'))
+        return GenerationTemplate(self.template.replace("[PROMPT]", "[APE]"))
 
 
 class DemosTemplate:
@@ -57,7 +64,7 @@ class DemosTemplate:
 
     """
 
-    def __init__(self, template, delimiter='\n\n'):
+    def __init__(self, template, delimiter="\n\n"):
         self.template = template
         self.delimiter = delimiter
 
@@ -65,12 +72,14 @@ class DemosTemplate:
         """
         Fills in the template with the given values. Data is a tuple of lists.
         """
-        demos = ''
+        demos = ""
         for i, (input_, output_) in enumerate(zip(*data)):
-            demos += self.template.replace('[INPUT]', input_).replace(
-                '[OUTPUT]', output_)
+            demos += self.template.replace("[INPUT]", input_).replace(
+                "[OUTPUT]", output_
+            )
 
             if i != len(data[0]) - 1:
                 demos += self.delimiter
 
         return demos
+
